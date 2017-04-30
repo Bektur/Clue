@@ -10,7 +10,7 @@
 
 % maybe create dynamic varaibles for which cards does the character have
 :- dynamic handSize/2.
-:- dynamic knownCards/2
+:- dynamic knownCards/1.
 :- dynamic disprovedCards/2.
 
 
@@ -65,11 +65,7 @@ room(19).
 room(20).
 room(21).
 
-getUserInput(X):-
-	write("Choose a player"),
-	nl, 
-	read(X),
-	getSuspects(X).
+
 
 getWhoSuggest(X):-
 	write("Who made the Suggestion"),
@@ -82,18 +78,15 @@ getWhoSuggest(X):-
 	read(X).
 
 
-<<<<<<< HEAD
 getSuggestion(Suggestion,Suggester,Disprover):-
 	getWhoSuggest(Suggester),
 	character(Suggester),	
 	write("Enter a suggession in the format weapon, suspect, room: "),
-=======
 
 getSuggestion(Suggestion,Suggester,Disprover):-
 	getWhoSuggest(Suggester),
 	character(Suggester),
-        write("Enter a suggession in the order weapon, suspect, room: "),
->>>>>>> origin/master
+    write("Enter a suggession in the order weapon, suspect, room: "),
 	nl, 
 	write("What was the weapon"),
 	nl,
@@ -108,21 +101,22 @@ getSuggestion(Suggestion,Suggester,Disprover):-
 	read(Room),
 	room(Room),
 	Suggestion = [Weapon,Suspect,Room],
-<<<<<<< HEAD
 	write("Who disproved the Suggestion, if no one disproves it, enter the name of the Suggester"),
 	nl, 
 	read(Disprover),
 	character(Disprover),
+	decideDisprover(Disprover).
+	
+
+
+decideDisprover(Disprover):-
 	write("Write your card to disprove"),
 	nl, 
 	read(Card),
 	assert(disprovedCards(Disprover,Card).
 
-
-
 getAccusatio(Accusation,Accuser):-
 	write("Who made an incorrect accussation"),
-=======
 	write("Who disproved the Accusation, if no one disproves it, enter the name of the Accuser"),
 	nl, 
 	read(Disprover),
@@ -130,7 +124,6 @@ getAccusatio(Accusation,Accuser):-
 
 getAccusation(Accusation,Accuser):-
 	write("Who made an icorrect accussation"),
->>>>>>> origin/master
 	nl,
 	read(Accuser),
 	character(Accuser),	
@@ -160,6 +153,7 @@ getHands(NHands,Character):-
 	N1 is NHands - 1,
 	getHands(N1,Character).
 
+
 initGame(Characters,Hands):-
 	write("Enter the number of players"),
 	nl,
@@ -173,11 +167,8 @@ initGame(Characters,Hands):-
 	write("How many cards are in your hand?"),
 	nl, 
 	read(H1),
-<<<<<<< HEAD
 	getHands(H1,C1),
-=======
-        assert(handSize(C1,H1)),
->>>>>>> origin/master
+    assert(handSize(C1,H1)),
 	Characters = [C1|CT],
 	Hands = [H1|HT],
 	N1 is NPlayers - 1,
@@ -197,14 +188,7 @@ playerInfo(NPlayers,[CH|CT],[NH|NT]):-
         assert(handSize(CH,NH)),
 	N1 is NPlayers - 1,
 	playerInfo(N1,CT,NT).
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
-
-min(A, B, Min) :- 
-	A < B -> Min = A; 
-	Min = B. 
 
 menuScreen(X):-
 	write("Press 1 to record a Suggestion"),
