@@ -8,6 +8,30 @@
 %6 weapons 
 %9 rooms 
 
+:- dynamic handSize/2.
+% handSize(C,H) if character has H cards in hand.
+
+:- dynamic playerCharacter/1.
+% This character has the distinction of being controlled by the player.
+% They get to know the specific card which refutes their suggestion.
+
+
+:- dynamic recordedSuggestion/3.
+% A suggestion is ([Weapon,Suspect, Room], Suggester, Disprover)
+% the suggestion is a weapon suspect and Room
+% the suggester is the player that makes the suggestion
+% the disprover is the player that shows the suggester a card to disprove it
+% if the suggestion goes all the way around the table,
+% the Suggester and the Disprover are the same character
+
+:- dynamic recordedAccusation/3.
+% An accusation is like a suggestion, but without a disprover
+% All accusations inside the database are false.
+% this is because true accusations end the game.
+
+:- dynamic disprovedCards/2.
+
+
 
 % List of all possible characters
 character(mustard).
@@ -99,10 +123,11 @@ getSuggestion(Suggestion,Suggester,Disprover):-
 	write("Who disproved the Accusation, if no one disproves it, enter the name of the Accuser"),
 	nl, 
 	read(Disprover),
-	character(Disprover).%replace with player(Disprover)
+	character(Disprover), %replace with player(Disprover)
+        assert(recordedSuggestion(Suggestion,Suggester,Disprover)).
 
 getAccusation(Accusation,Accuser):-
-	write("Who made an icorrect accussation"),
+	write("Who made an incorrect accussation"),
 	nl,
 	read(Accuser),
 	character(Accuser),	
@@ -120,7 +145,8 @@ getAccusation(Accusation,Accuser):-
 	nl,
 	read(Room),
 	room(Room),
-	Accusation = [Weapon,Suspect,Room].
+	Accusation = [Weapon,Suspect,Room],
+        assert(recordedAccusation(Accusation, Accuser)).
 
 initGame(Characters,Hands):-
 	write("Enter the number of players"),
@@ -161,25 +187,5 @@ menuScreen(X):-
 	nl,
 	write("Press 2 to record an accusation").
 
-:- dynamic handSize/2.
-% handSize(C,H) if character has H cards in hand.
-
-:- dynamic playerCharacter/1.
-% This character has the distinction of being controlled by the player.
-% They get to know the specific card which refutes their suggestion.
-
-
-:- dynamic recordedSuggestion/3.
-% A suggestion is ([Weapon,Suspect, Room], Suggester, Disprover)
-% the suggestion is a weapon suspect and Room
-% the suggester is the player that makes the suggestion
-% the disprover is the player that shows the suggester a card to disprove it
-% if the suggestion goes all the way around the table,
-% the Suggester and the Disprover are the same character
-
-:- dynamic recordedAccusation/3.
-% An accusation is like a suggestion, but without a disprover
-% All accusations inside the database are false.
-% this is because true accusations end the game.
-
-:- dynamic disprovedCards/2.
+displayHistory :-
+       recordedSuggestion(X,Y,Z),format('~w ~w ~w', [X, Y, Z]).
