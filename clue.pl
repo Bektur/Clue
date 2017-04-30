@@ -8,6 +8,7 @@
 %6 weapons 
 %9 rooms 
 
+% maybe create dynamic varaibles for which cards does the character have
 :- dynamic handSize/2.
 % handSize(C,H) if character has H cards in hand.
 
@@ -84,6 +85,8 @@ room(19).
 room(20).
 room(21).
 
+
+
 getWhoSuggest(X):-
 	write("Who made the Suggestion"),
 	nl,
@@ -109,14 +112,14 @@ getSuggestion(Suggestion,Suggester,Disprover):-
 	read(Room),
 	room(Room),
 	Suggestion = [Weapon,Suspect,Room],
-	write("Who disproved the Accusation, if no one disproves it, enter the name of the Accuser"),
+	write("Who disproved the Suggestion, if no one disproves it, enter the name of the Suggester"),
 	nl, 
 	read(Disprover),
 	character(Disprover), %replace with player(Disprover)
         assert(recordedSuggestion(Suggestion,Suggester,Disprover)).
 
 getAccusation(Accusation,Accuser):-
-	write("Who made an incorrect accussation"),
+	write("Who made an incorrect accusation"),
 	nl,
 	read(Accuser),
 	character(Accuser),	
@@ -135,7 +138,22 @@ getAccusation(Accusation,Accuser):-
 	read(Room),
 	room(Room),
 	Accusation = [Weapon,Suspect,Room],
-        assert(recordedAccusation(Accusation, Accuser)).
+	assert(recordedAccusation(Accusation, Accuser)).
+
+
+
+
+
+getHands(0,_).
+getHands(NHands,Character):-
+	write("Enter your cards"),
+	nl, 
+	read(Hands),
+	assert(handSize(Character,Hands)),
+	assert(disprovedCard(Character,Hands)),
+	N1 is NHands - 1,
+	getHands(N1,Character).
+
 
 initGame(Characters,Hands):-
 	write("Enter the number of players"),
@@ -150,7 +168,8 @@ initGame(Characters,Hands):-
 	write("How many cards are in your hand?"),
 	nl, 
 	read(H1),
-        assert(handSize(C1,H1)),
+	getHands(H1,C1),
+    	assert(handSize(C1,H1)),
 	Characters = [C1|CT],
 	Hands = [H1|HT],
 	N1 is NPlayers - 1,
@@ -170,6 +189,7 @@ playerInfo(NPlayers,[CH|CT],[NH|NT]):-
         assert(handSize(CH,NH)),
 	N1 is NPlayers - 1,
 	playerInfo(N1,CT,NT).
+
 
 menuScreen(X):-
 	write("Press 1 to record a Accusation"),
