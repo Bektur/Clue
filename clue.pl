@@ -84,19 +84,8 @@ room(19).
 room(20).
 room(21).
 
-getUserInput(X):-
-	write('Choose a player'),
-	nl, 
-	read(X),
-	getSuspects(X).
-
 getWhoSuggest(X):-
-	write("Who made the Accusation"),
-	nl,
-	read(X).
-
-getWhoSuggest(X):-
-	write("Who made the Accusation"),
+	write("Who made the Suggestion"),
 	nl,
 	read(X).
 
@@ -188,4 +177,6 @@ menuScreen(X):-
 	write("Press 2 to record an accusation").
 
 displayHistory :-
-       recordedSuggestion(X,Y,Z),format('~w ~w ~w', [X, Y, Z]).
+       recordedSuggestion(X,Y,Z),format('~w ~w ~w', [X, Y, Z]),
+       failedAccusation(V,W),format('~w ~w',[V,W]).
+
