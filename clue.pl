@@ -25,12 +25,14 @@
 % if the suggestion goes all the way around the table,
 % the Suggester and the Disprover are the same character
 
-:- dynamic recordedAccusation/3.
+:- dynamic failedAccusation/3.
 % An accusation is like a suggestion, but without a disprover
 % All accusations inside the database are false.
 % this is because true accusations end the game.
 
 :- dynamic disprovedCards/2.
+% disprovedCards(Character, card) if character is known to hold card
+% in their hand.
 
 
 
@@ -90,11 +92,12 @@ room(21).
 getWhoSuggest(X):-
 	write("Who made the Suggestion"),
 	nl,
-	read(X).
+	read(X),
+        nl.
 
 
 
-getSuggestion(Suggestion,Suggester,Disprover):-
+getSuggestion(Suggestion, Suggester, Disprover, Pc):-
 	getWhoSuggest(Suggester),
 	character(Suggester),
         write("Enter a suggession in the order weapon, suspect, room: "),
@@ -116,9 +119,20 @@ getSuggestion(Suggestion,Suggester,Disprover):-
 	nl, 
 	read(Disprover),
 	character(Disprover), %replace with player(Disprover)
-        assert(recordedSuggestion(Suggestion,Suggester,Disprover)).
+        assert(recordedSuggestion(Suggestion,Suggester,Disprover)),
+        (Pc = Suggester, Suggester \= Disprover -> 
+            write("What card did they show you?"),
+            nl,
+            read(X),
+            nl,
+            assert(disprovedCards(Disprover,X));
+            true
+        ).
 
-getAccusation(Accusation,Accuser):-
+
+%getAccusation.  Used when other players make an incorrect accusation
+% we do not record correct accusations, as those end the game.
+getAccusation():-
 	write("Who made an incorrect accusation"),
 	nl,
 	read(Accuser),
@@ -138,23 +152,21 @@ getAccusation(Accusation,Accuser):-
 	read(Room),
 	room(Room),
 	Accusation = [Weapon,Suspect,Room],
-	assert(recordedAccusation(Accusation, Accuser)).
-
-
-
-
+	assert(failedAccusation(Accusation, Accuser)).
 
 getHands(0,_).
 getHands(NHands,Character):-
-	write("Enter your cards"),
+	write("Enter the name of one of the cards in your hand."),
 	nl, 
 	read(Hands),
+        nl,
 	assert(handSize(Character,Hands)),
 	assert(disprovedCard(Character,Hands)),
 	N1 is NHands - 1,
 	getHands(N1,Character).
 
 
+%starts the game
 initGame(Characters,Hands):-
 	write("Enter the number of players"),
 	nl,
@@ -164,16 +176,21 @@ initGame(Characters,Hands):-
 	nl,
 	read(C1),
 	character(C1),
-        assert(playerCharacter(C1)),
 	write("How many cards are in your hand?"),
 	nl, 
 	read(H1),
-	getHands(H1,C1),
+        nl,
     	assert(handSize(C1,H1)),
+        %record the handsize of the player
 	Characters = [C1|CT],
 	Hands = [H1|HT],
 	N1 is NPlayers - 1,
-	playerInfo(N1,CT,HT).
+	playerInfo(N1,CT,HT),
+        %record the handsizes of others
+        getHands(H1,C1),!,
+        %return to the menu screen
+        menuScreen(C1).
+        
 
 % NH is head for hand size list
 playerInfo(0,[],[]).
@@ -191,12 +208,37 @@ playerInfo(NPlayers,[CH|CT],[NH|NT]):-
 	playerInfo(N1,CT,NT).
 
 
-menuScreen(X):-
-	write("Press 1 to record a Accusation"),
+%displays a menu screen.  the player selects an option from it.
+menuScreen(C1):-
+	write("Enter 1 to record a suggestion another player made"),
 	nl,
-	write("Press 2 to record an accusation").
+	write("Enter 2 to record an accusation another player made"),
+        nl,
+        write("Enter 3 to display the history of suggestions"),
+        nl,
+        write("Enter 4 to display the history of incorrect accusations"),
+        nl,
+        write("Enter 5 to display advice on what accusation to make"),
+        nl,
+        write("Enter 6 for advice on a suggestion to make"),
+        nl,
+        write("Enter 7 if you would like to exit"),
+        nl,
+        read(S),
+        (S = 1 -> getSuggestion(Suggestion,Suggester,Disprover,C1);
+         S = 2 -> getAccusation;
+         S = 3 -> displayHistory;
+         S = 4 -> displayAccHist;
+         S = 5 -> calculateAccusation;
+         S = 6 -> calculateSuggestion;
+         S = 7 -> halt;
+         write("not a valid selection."),menuScreen(C1)
+         ),
+         menuScreen(C1).
+
+calculateAccusation.
+calculateSuggestion.
+
 
 displayHistory :-
-       recordedSuggestion(X,Y,Z),format('~w ~w ~w', [X, Y, Z]),
-       failedAccusation(V,W),format('~w ~w',[V,W]).
-
+       recordedSuggestion(X,Y,Z),format('~w ~w ~w', [X, Y, Z]).
