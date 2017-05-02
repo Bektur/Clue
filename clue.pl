@@ -37,10 +37,13 @@
 % disprovedCards(Character, card) if character is known to hold card
 % in their hand.
 
+<<<<<<< HEAD
 :- dynamic setofSolutions/1.
 % we generate all the possible solutions for cards and save it in 
 % setofSolutions variable so that we can suggest the players 
 
+=======
+>>>>>>> origin/master
 
 
 % List of all possible characters
@@ -126,6 +129,7 @@ printResults([]).
 printResults([H|T]):-
 	write(H),
 	nl,
+<<<<<<< HEAD
 	printResults(T).
 
 getWhoSuggest(X):-
@@ -135,6 +139,13 @@ getWhoSuggest(X):-
     nl.
 
 
+=======
+	read(X),
+        nl.
+
+
+
+>>>>>>> origin/master
 getSuggestion(Suggestion, Suggester, Disprover, Pc):-
 	getWhoSuggest(Suggester),
 	character(Suggester),
@@ -164,8 +175,11 @@ getSuggestion(Suggestion, Suggester, Disprover, Pc):-
             read(X),
             nl,
             assert(disprovedCards(Disprover,X));
+<<<<<<< HEAD
             % if no one disproves the sugggestion then none of the players have 
             % suggested cards
+=======
+>>>>>>> origin/master
             true
         ).
 
@@ -254,11 +268,14 @@ intersection([H1|T1],L2,[H1|T2]):-
 	intersection(T1,L2,T2),
 	!.
 
+<<<<<<< HEAD
 intersection([_|T1],L2,T2):-
 	intersection(T1,L2,T2).
 
 
 
+=======
+>>>>>>> origin/master
 %displays a menu screen.  the player selects an option from it.
 menuScreen(C1):-
 	write("Enter 1 to record a suggestion another player made"),
