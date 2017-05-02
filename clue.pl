@@ -37,13 +37,11 @@
 % disprovedCards(Character, card) if character is known to hold card
 % in their hand.
 
-<<<<<<< HEAD
 :- dynamic setofSolutions/1.
 % we generate all the possible solutions for cards and save it in 
 % setofSolutions variable so that we can suggest the players 
 
-=======
->>>>>>> origin/master
+
 
 
 % List of all possible characters
